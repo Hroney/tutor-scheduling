@@ -3,6 +3,7 @@
 # Standard library imports
 from random import randint, choice as rc
 from sqlalchemy.exc import IntegrityError
+from datetime import datetime, timedelta
 
 # Remote library imports
 from faker import Faker
@@ -25,7 +26,7 @@ def create_tutors():
 
 def create_tutees():
     tutees = []
-    for _ in range(30):
+    for _ in range(20):
         random_suffix = fake.random_int(min=0, max=999999)
         student_number = f"4000{random_suffix:06d}"
         t = Tutee(
@@ -44,7 +45,7 @@ def create_courses(tutors):
     courses = []
     for tutor in tutors:
         try:
-            for _ in range(len(course_list)):
+            for _ in range(fake.random_int(min=1, max=len(course_list))):
                 course_name = rc(course_list)
 
                 c = Course(
@@ -62,7 +63,7 @@ def create_scheduled_days(tutors):
     scheduled_days = []
     for tutor in tutors:
         try:
-            for _ in range(5):
+            for _ in range(len(day_list)):
                 scheduled_day = rc(day_list)
                 s = ScheduledDay(
                     day = scheduled_day,
@@ -73,6 +74,26 @@ def create_scheduled_days(tutors):
             print(f"Tutor is already scheduled for that day.")
     return scheduled_days
 
+def create_sessions(tutors, tutees):
+    sessions = []
+    for tutee in tutees:
+        try:
+            for _ in range(fake.random_int(min=1, max=3)):
+                tutor = rc(tutors)
+                scheduled_day = rc([rc(tutor.days_scheduled).day])
+                hour = fake.random_int(min=8, max=8)
+
+                s = Session(
+                    course = rc([course.name for course in tutor.courses]),
+                    tutor_id = tutor.id,
+                    tutee_id = tutee.id,
+                    day_scheduled = scheduled_day,
+                    time_scheduled = hour
+                )
+                sessions.append(s)
+        except Exception as e:
+            print(f"Session is a repeat.")
+    return sessions
 
 if __name__ == '__main__':
     fake = Faker()
@@ -111,6 +132,16 @@ if __name__ == '__main__':
                 db.session.commit()
             except IntegrityError as e:
                 db.session.rollback()
+
+        print("Seeding Sessions...")
+        sessions = create_sessions(tutors, tutees)
+        for session in sessions:
+            db.session.add(session)
+            try:
+                db.session.commit()
+            except IntegrityError as e:
+                db.session.rollback()
+        
 
         print("Done Seeding!")
         # sessions = create_sessions()

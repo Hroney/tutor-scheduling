@@ -11,8 +11,8 @@ class Session(db.Model, SerializerMixin):
     __tablename__ = 'sessions'
 
     id = db.Column(db.Integer, primary_key=True)
-    date_scheduled = db.Column(db.Date)
-    time_scheduled = db.Column(db.Time)
+    day_scheduled = db.Column(db.String)
+    time_scheduled = db.Column(db.Integer)
     course = db.Column(db.String)
 
     # Relationships
@@ -20,7 +20,7 @@ class Session(db.Model, SerializerMixin):
     tutee_id = db.Column(db.Integer, db.ForeignKey('tutees.id'))
 
     __table_args__ = (
-        UniqueConstraint('date_scheduled', 'time_scheduled', 'tutor_id', name='unique_date_time_tutor'),
+        UniqueConstraint('day_scheduled', 'time_scheduled', 'tutor_id', name='unique_date_time_tutor'),
     )
     def __repr__(self):
         return f'<Session {self.id}>'
