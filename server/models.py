@@ -30,11 +30,20 @@ class Tutor(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
-    certification_level = db.Column(db.String)
+    certification_level = db.Column(db.Integer)
 
     # Relationships
-    courses = db.relationship('Course', backref='tutors', lazy=True)
-    days_scheduled = db.relationship('ScheduledDay', backref='tutor', lazy=True)
+    courses = db.relationship('Course', back_populates='tutor', lazy=True)
+    days_scheduled = db.relationship('ScheduledDay', back_populates='tutor', lazy=True)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'certification_level': self.certification_level,
+            'courses': [course.name for course in self.courses],
+            'days_scheduled': [day.day for day in self.days_scheduled]
+        }
 
     def __repr__(self):
         return f'<Tutor {self.id}: {self.name}>'
@@ -47,7 +56,9 @@ class ScheduledDay(db.Model):
 
     # Relationships
     tutor_id = db.Column(db.Integer, db.ForeignKey('tutors.id'))
-    
+    tutor = db.relationship('Tutor', back_populates='days_scheduled', lazy=True)
+
+
     #validation/constraints
     __table_args__ = (
         UniqueConstraint('day', 'tutor_id', name="unique_day_tutor"),
@@ -64,6 +75,11 @@ class Course(db.Model):
 
     # Relationships
     tutor_id = db.Column(db.Integer, db.ForeignKey('tutors.id'))
+    tutor = db.relationship('Tutor', back_populates='courses', lazy=True)
+
+    __table_args__ = (
+        UniqueConstraint('name', 'tutor_id', name="unique_course_tutor"),
+    )
 
     def __repr__(self):
         return f'<Course {self.id}: {self.name}>'
