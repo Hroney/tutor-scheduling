@@ -26,7 +26,6 @@ class Index(Resource):
         )
         return response
 
-
 class Sessions(Resource):
 
     def get(self):
@@ -36,8 +35,7 @@ class Sessions(Resource):
             200,
         )
         return response
-
-
+    
 class Tutors(Resource):
 
     def get(self):
@@ -47,7 +45,6 @@ class Tutors(Resource):
             200,
         )
         return response
-
 
 class Tutor_by_id(Resource):
 
@@ -59,6 +56,16 @@ class Tutor_by_id(Resource):
         )
         return response
 
+class Tutors_sessions(Resource):
+
+    def get(self, id):
+        response_dict_list = [s.to_dict() for s in Session.query.filter_by(tutor_id=id).all()]
+        response = make_response(
+            response_dict_list,
+            200,
+        )
+        return response
+    
 class Tutees(Resource):
 
     def get(self):
@@ -78,13 +85,25 @@ class Tutee_by_id(Resource):
             200,
         )
         return response
+    
+class Tutees_sessions(Resource):
+
+    def get(self, id):
+        response_dict_list = [s.to_dict() for s in Session.query.filter_by(tutee_id=id).all()]
+        response = make_response(
+            response_dict_list,
+            200,
+        )
+        return response
 
 api.add_resource(Index, '/')
 api.add_resource(Sessions, '/sessions')
 api.add_resource(Tutors, '/tutors')
 api.add_resource(Tutor_by_id, '/tutors/<int:id>')
+api.add_resource(Tutors_sessions, '/tutors/<int:id>/sessions')
 api.add_resource(Tutees, '/tutees')
 api.add_resource(Tutee_by_id, '/tutees/<int:id>')
+api.add_resource(Tutees_sessions, '/tutees/<int:id>/sessions')
 
 
 
