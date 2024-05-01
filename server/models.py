@@ -92,7 +92,6 @@ class Tutee(db.Model, SerializerMixin):
     student_number = db.Column(db.Integer)
 
     # Relationships
-    sessions = db.relationship('Session', backref='tutees', lazy=True)
 
     def __repr__(self):
         return f'<Tutee {self.id}: {self.name}>'
