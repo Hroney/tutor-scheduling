@@ -11,14 +11,15 @@ from config import app, db, api
 # Add your model imports
 from models import db, Session, Tutor, Course, ScheduledDay, Tutee
 
-
-
 # Views go here!
 class Index(Resource):
 
     def get(self):
         response_dict = {
             "index": "Welcome to the Tutor Sign-up API",
+            "sessions": "/sessions",
+            "tutors": "/tutors",
+            "tutees": "/tutees",
         }
         response = make_response(
             response_dict,
@@ -36,20 +37,116 @@ class Sessions(Resource):
         )
         return response
     
+    def post(self):
+        try:
+
+            data = request.json
+            required_fields = ['day_scheduled', 'time_scheduled', 'course', 'tutor_id', 'tutee_id']
+            
+            for field in required_fields:
+                if field not in data:
+                    return {'error': f'Missing required field {field}'}, 400
+
+            day = data.get('day_scheduled')
+            time = data.get('time_scheduled')
+            course = data.get('course')
+            tutor = data.get('tutor_id')
+            tutee = data.get('tutee_id')
+
+            new_session = Session(
+                day_scheduled = day,
+                time_scheduled = time,
+                course = course,
+                tutor_id = tutor,
+                tutee_id = tutee
+            )
+
+            db.session.add(new_session)
+            db.session.commit()
+
+            return new_session.to_dict(), 201
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'An error {e} occurred while processing the request'}, 500
+    
 class Tutors(Resource):
 
     def get(self):
         response_dict_list = [t.to_dict() for t in Tutor.query.all()]
+        for t in response_dict_list:
+            t_id = t['id']
+            t.update({"tutor": f"/tutors/{t_id}"})
+        response = make_response(
+            response_dict_list,
+            200,
+        )
+        
+        return response
+    
+    def post(self):
+        try:
+            data = request.json
+            required_fields = ['name', 'certification_level']
+
+            for field in required_fields:
+                if field not in data:
+                    return {'error': f'Missing required field {field}'}, 400
+                
+            new_tutor = Tutor(
+                name = data.get('name'),
+                certification_level = data.get('certification_level')
+            )
+
+            db.session.add(new_tutor)
+            db.session.commit()
+            return {'message': 'Tutor created successfully'}, 201
+        except Exception as e:
+            db.session.rollback()
+            return {'error': 'An error occured while processing the request'}, 500
+    
+
+class Tutees(Resource):
+
+    def get(self):
+        response_dict_list = [t.to_dict() for t in Tutee.query.all()]
+        for t in response_dict_list:
+            t_id = t['id']
+            t.update({"tutee": f"/tutees/{t_id}"})
         response = make_response(
             response_dict_list,
             200,
         )
         return response
+    
+    def post(self):
+        try:
+            data = request.json
+            required_fields = ['name', 'student_number']
+
+            for field in required_fields:
+                if field not in data:
+                    return {'error': f'Missing required field {field}'}, 400
+                
+            new_tutee = Tutee(
+                name = data.get('name'),
+                student_number = data.get('student_number')
+            )
+
+            db.session.add(new_tutee)
+            db.session.commit()
+            return {'message': 'Tutee created successfully'}, 201
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'An {e} error occured while processing the request'}, 500
+
+
+# relational views
 
 class Tutor_by_id(Resource):
 
     def get(self, id):
         response_dict = Tutor.query.filter_by(id=id).first().to_dict()
+        response_dict.update({"sessions": f"/tutors/{response_dict['id']}/sessions"})        
         response = make_response(
             response_dict,
             200,
@@ -66,20 +163,11 @@ class Tutors_sessions(Resource):
         )
         return response
     
-class Tutees(Resource):
-
-    def get(self):
-        response_dict_list = [t.to_dict() for t in Tutee.query.all()]
-        response = make_response(
-            response_dict_list,
-            200,
-        )
-        return response
-
 class Tutee_by_id(Resource):
 
     def get(self, id):
         response_dict = Tutee.query.filter_by(id=id).first().to_dict()
+        response_dict.update({"sessions": f"/tutees/{response_dict['id']}/sessions"}) 
         response = make_response(
             response_dict,
             200,
@@ -99,9 +187,9 @@ class Tutees_sessions(Resource):
 api.add_resource(Index, '/')
 api.add_resource(Sessions, '/sessions')
 api.add_resource(Tutors, '/tutors')
+api.add_resource(Tutees, '/tutees')
 api.add_resource(Tutor_by_id, '/tutors/<int:id>')
 api.add_resource(Tutors_sessions, '/tutors/<int:id>/sessions')
-api.add_resource(Tutees, '/tutees')
 api.add_resource(Tutee_by_id, '/tutees/<int:id>')
 api.add_resource(Tutees_sessions, '/tutees/<int:id>/sessions')
 
