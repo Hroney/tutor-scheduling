@@ -39,7 +39,6 @@ class Sessions(Resource):
     
     def post(self):
         try:
-
             data = request.json
             required_fields = ['day_scheduled', 'time_scheduled', 'course', 'tutor_id', 'tutee_id']
             
@@ -69,6 +68,9 @@ class Sessions(Resource):
             db.session.rollback()
             return {'error': f'An error {e} occurred while processing the request'}, 500
     
+
+
+
 class Tutors(Resource):
 
     def get(self):
@@ -142,6 +144,40 @@ class Tutees(Resource):
 
 # relational views
 
+
+
+
+class Sessions_by_id(Resource):
+
+    def get(self, id):
+        response_dict = Session.query.filter_by(id=id).first().to_dict()
+        response = make_response(
+            response_dict,
+            200,
+        )
+        return response
+    
+    def patch(self, id):
+        try:
+            record = Session.query.filter_by(id=id).first()
+            for attr in request.json:
+                setattr(record, attr, request.json[attr])
+            db.session.add(record)
+            db.session.commit()
+
+            return record.to_dict(), 200
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'An error {e} occurred while processing the request'}, 500
+        
+    def delete(self, id):
+        record = Session.query.filter_by(id=id).first()
+        if not record:
+            return {'error': 'Record not found'}, 404
+        db.session.delete(record)
+        db.session.commit()
+        return {"message": "record successfully deleted"}, 200
+
 class Tutor_by_id(Resource):
 
     def get(self, id):
@@ -186,6 +222,7 @@ class Tutees_sessions(Resource):
 
 api.add_resource(Index, '/')
 api.add_resource(Sessions, '/sessions')
+api.add_resource(Sessions_by_id, '/sessions/<int:id>')
 api.add_resource(Tutors, '/tutors')
 api.add_resource(Tutees, '/tutees')
 api.add_resource(Tutor_by_id, '/tutors/<int:id>')
