@@ -102,3 +102,29 @@ class TestApp:
             session = Session.query.filter(
                 Session.tutor_id == tutor.id, Session.tutee_id == tutee.id).one_or_none()
             assert session.time_scheduled == 10
+
+    # def test_sessions_patch(self):
+    #     with app.app_context():
+    #         tutor = Tutor(
+    #             name = "Test Tutor",
+    #             certification_level = 1
+    #         )
+    #         tutee = Tutee(
+    #             name = "Test Tutee",
+    #             student_number = 4000123456
+    #         )
+    #         course = Course(
+    #             name = "Test_1",
+    #             tutor_id = tutor.id
+    #         )
+    #         session = Session(
+    #             course = "Math_test",
+    #             day_scheduled = "Tuesday",
+    #             time_scheduled = 9,
+    #             tutor_id = tutor.id,
+    #             tutee_id = tutee.id,
+    #         )
+    #         db.session.add_all([tutor, tutee, course, session])
+    #         db.session.commit()
+
+
