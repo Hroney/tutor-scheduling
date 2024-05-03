@@ -29,7 +29,7 @@ class Tutor(db.Model, SerializerMixin):
     __tablename__ = 'tutors'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
+    name = db.Column(db.String, unique=True)
     certification_level = db.Column(db.Integer)
 
     # Relationships
@@ -88,10 +88,17 @@ class Tutee(db.Model, SerializerMixin):
     __tablename__ = 'tutees'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
+    name = db.Column(db.String, unique=True)
     student_number = db.Column(db.Integer)
 
     # Relationships
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'student_number': self.student_number,
+        }
 
     def __repr__(self):
         return f'<Tutee {self.id}: {self.name}>'

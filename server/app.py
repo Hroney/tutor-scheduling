@@ -5,6 +5,7 @@
 # Remote library imports
 from flask import request, make_response
 from flask_restful import Resource
+from sqlalchemy.exc import IntegrityError
 
 # Local imports
 from config import app, db, api
@@ -101,7 +102,10 @@ class Tutors(Resource):
 
             db.session.add(new_tutor)
             db.session.commit()
-            return {'message': 'Tutor created successfully'}, 201
+            return new_tutor.to_dict(), 201
+        except IntegrityError as e:
+            db.session.rollback()
+            return {'error': 'Tutor with the same name already exists'}, 400
         except Exception as e:
             db.session.rollback()
             return {'error': 'An error occured while processing the request'}, 500
@@ -136,7 +140,7 @@ class Tutees(Resource):
 
             db.session.add(new_tutee)
             db.session.commit()
-            return {'message': 'Tutee created successfully'}, 201
+            return new_tutee.to_dict(), 201
         except Exception as e:
             db.session.rollback()
             return {'error': f'An {e} error occured while processing the request'}, 500
@@ -188,6 +192,28 @@ class Tutor_by_id(Resource):
             200,
         )
         return response
+    
+    def delete(self, id):
+        record = Tutor.query.filter_by(id=id).first()
+        if not record:
+            return {'error': 'Record not found'}, 404
+        db.session.delete(record)
+        db.session.commit()
+        return {"message": "record successfully deleted"}, 200   
+
+    def patch(self, id):
+        try:
+            record = Tutor.query.filter_by(id=id).first()
+            for attr in request.json:
+                setattr(record, attr, request.json[attr])
+            db.session.add(record)
+            db.session.commit()
+
+            return record.to_dict(), 200
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'An error {e} occurred while processing the request'}, 500 
+
 
 class Tutors_sessions(Resource):
 
@@ -209,6 +235,27 @@ class Tutee_by_id(Resource):
             200,
         )
         return response
+    
+    def delete(self, id):
+        record = Tutee.query.filter_by(id=id).first()
+        if not record:
+            return {'error': 'Record not found'}, 404
+        db.session.delete(record)
+        db.session.commit()
+        return {"message": "record successfully deleted"}, 200   
+    
+    def patch(self, id):
+        try:
+            record = Tutee.query.filter_by(id=id).first()
+            for attr in request.json:
+                setattr(record, attr, request.json[attr])
+            db.session.add(record)
+            db.session.commit()
+
+            return record.to_dict(), 200
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'An error {e} occurred while processing the request'}, 500     
     
 class Tutees_sessions(Resource):
 
