@@ -81,7 +81,7 @@ def create_sessions(tutors, tutees):
             for _ in range(fake.random_int(min=1, max=3)):
                 tutor = rc(tutors)
                 scheduled_day = rc([rc(tutor.days_scheduled).day])
-                hour = fake.random_int(min=8, max=8)
+                hour = fake.random_int(min=8, max=17)
 
                 s = Session(
                     course = rc([course.name for course in tutor.courses]),
