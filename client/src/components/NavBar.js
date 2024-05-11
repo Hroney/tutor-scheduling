@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+import '../styles/navbar.css'
 
 function NavBar() {
 
@@ -23,7 +24,6 @@ function NavBar() {
                 Apply to be a Tutor
             </NavLink>
         </nav>
-
     )
 }
 

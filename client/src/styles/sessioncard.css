@@ -1,0 +1,46 @@
+.session-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.session-card {
+    width: 1fr;
+    background-color: #222222;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 5px;
+    /* margin-bottom: 20px; */
+}
+
+.session-card h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.session-card p {
+    font-size: 1rem;
+    color: #666;
+}
+
+.session-card .time {
+    font-weight: bold;
+}
+
+
+.scrollable-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+    gap: 5px;
+}
+
+.day-container {
+    margin-bottom: 20px;
+}
+
+.session-cards-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+    gap: 5px;
+}
