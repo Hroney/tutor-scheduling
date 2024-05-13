@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import SessionCard from "./SessionCard";
-import '../styles/sessioncard.css';
+import "../styles/schedule.css"
 
 function Schedule() {
     const [sessions, setSessions] = useState([]);

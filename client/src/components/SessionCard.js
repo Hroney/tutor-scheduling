@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import SignUpForm from "./SignUpForm";
 import '../styles/sessioncard.css';
 
 const SessionCard = ({ session }) => {
@@ -6,6 +7,7 @@ const SessionCard = ({ session }) => {
   const [tutee, setTutee] = useState(null);
   const [expanded, setExpanded] = useState(false);
   const [timer, setTimer] = useState(false);
+  const [showSignUpForm, setShowSignUpForm] = useState(false);
 
   let time = session.time_scheduled;
   let ampm = time >= 12 ? " pm" : " am";
@@ -32,6 +34,14 @@ const SessionCard = ({ session }) => {
     }
   }, [timer, session.tutor_id, session.tutee_id]);
 
+  const handleButtonClick = () => {
+    setShowSignUpForm(true);
+  };
+
+  const handleCloseSignUpForm = () => {
+    setShowSignUpForm(false);
+  };
+
   if (session.course) {
     return (
       <div className={`session-card ${expanded ? 'expanded' : ''}`} onClick={() => setExpanded(!expanded)}>
@@ -43,13 +53,15 @@ const SessionCard = ({ session }) => {
             <p><strong>Tutee:</strong> {tutee.name}</p>
           </div>
         )}
+
       </div>
     );
   } else {
     return (
       <div className={`session-card ${expanded ? 'expanded' : ''}`}>
-        <button><strong>Sign up</strong></button>
+        <button onClick={showSignUpForm ? handleCloseSignUpForm : handleButtonClick}><strong>{showSignUpForm ? "Cancel" : "Sign up"}</strong></button>
         <p><strong>Time:</strong> {session.time_scheduled >= 13 ? (time - 12) + ampm : time + ampm}</p>
+        {showSignUpForm && <SignUpForm session={session} handleClose={handleCloseSignUpForm} />}
       </div>
     )
   }

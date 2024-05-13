@@ -15,8 +15,8 @@ a:hover {
 
 .nav-bar {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: space-between;
     padding-left: 20vw;
-    padding-right: 20vw;
+    padding-right: 25vw;
     list-style: none;
 }
