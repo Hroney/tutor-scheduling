@@ -16,7 +16,7 @@ fake = Faker()
 
 def create_tutors():
     tutors = []
-    for _ in range(10):
+    for _ in range(2):
         t = Tutor(
             name=fake.name(),
             certification_level=fake.random_int(min=1, max=4)
