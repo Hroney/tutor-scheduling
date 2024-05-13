@@ -1,18 +1,20 @@
 import { useEffect, useState } from "react";
-import SessionCard from "./SessionCard"
-import '../styles/sessioncard.css'
+import SessionCard from "./SessionCard";
+import '../styles/sessioncard.css';
 
 function Schedule() {
-    const [sessions, setSessions] = useState([])
+    const [sessions, setSessions] = useState([]);
     const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+    const timeSlots = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
 
     useEffect(() => {
         fetch("/sessions")
             .then((res) => res.json())
             .then((data) => {
-                setSessions(data)
+                setSessions(data);
             })
-    }, 0)
+            .catch((error) => console.log("Error fetching sessions:", error));
+    }, []);
 
     return (
         <div className="scrollable-content">
@@ -20,12 +22,17 @@ function Schedule() {
                 <div key={day} className="day-container">
                     <h2>{day}:</h2>
                     <div className="session-cards-group">
-                        {sessions
-                            .filter(session => session.day_scheduled === day)
-                            .sort((a, b) => a.time_scheduled - b.time_scheduled)
-                            .map(session => (
-                                <SessionCard key={session.id} session={session} />
-                            ))}
+                        {timeSlots.map(time => {
+                            const session = sessions.find(session =>
+                                session.day_scheduled === day && session.time_scheduled === time
+                            );
+                            return (
+                                <SessionCard
+                                    key={`${day}-${time}`}
+                                    session={session || { day_scheduled: day, time_scheduled: time }}
+                                />
+                            );
+                        })}
                     </div>
                 </div>
             ))}
