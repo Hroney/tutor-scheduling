@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import SignUpForm from "./SignUpForm";
 import '../styles/sessioncard.css';
 
-const SessionCard = ({ session }) => {
+const SessionCard = ({ session, onSessionChange }) => {
   const [tutor, setTutor] = useState(null);
   const [tutee, setTutee] = useState(null);
   const [expanded, setExpanded] = useState(false);
@@ -32,7 +32,7 @@ const SessionCard = ({ session }) => {
         .then((data) => setTutee(data))
         .catch((error) => console.log("Error fetching tutee:", error));
     }
-  }, [timer, session.tutor_id, session.tutee_id]);
+  }, [timer, session.tutor_id, session.tutee_id, showSignUpForm]);
 
   const handleButtonClick = () => {
     setShowSignUpForm(true);
@@ -61,7 +61,7 @@ const SessionCard = ({ session }) => {
       <div className={`session-card ${expanded ? 'expanded' : ''}`}>
         <button onClick={showSignUpForm ? handleCloseSignUpForm : handleButtonClick}><strong>{showSignUpForm ? "Cancel" : "Sign up"}</strong></button>
         <p><strong>Time:</strong> {session.time_scheduled >= 13 ? (time - 12) + ampm : time + ampm}</p>
-        {showSignUpForm && <SignUpForm session={session} handleClose={handleCloseSignUpForm} />}
+        {showSignUpForm && <SignUpForm session={session} handleClose={handleCloseSignUpForm} onSessionChange={onSessionChange} />}
       </div>
     )
   }

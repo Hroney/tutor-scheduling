@@ -267,6 +267,16 @@ class Tutees_sessions(Resource):
         )
         return response
 
+class Tutees_id_number_check(Resource):
+    def get(self, student_number):
+        record = Tutee.query.filter_by(student_number = student_number).first()
+        print(record)
+        response = make_response(
+            record.to_dict(),
+            200,
+        )
+        return response
+
 api.add_resource(Index, '/')
 api.add_resource(Sessions, '/sessions')
 api.add_resource(Sessions_by_id, '/sessions/<int:id>')
@@ -276,6 +286,7 @@ api.add_resource(Tutor_by_id, '/tutors/<int:id>')
 api.add_resource(Tutors_sessions, '/tutors/<int:id>/sessions')
 api.add_resource(Tutee_by_id, '/tutees/<int:id>')
 api.add_resource(Tutees_sessions, '/tutees/<int:id>/sessions')
+api.add_resource(Tutees_id_number_check, '/tutees/<int:student_number>/student_number')
 
 
 
