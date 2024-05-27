@@ -38,7 +38,7 @@ function Schedule() {
         <div className="scrollable-content">
             {daysOfWeek.map(day => (
                 <div key={day} className="day-container">
-                    <h2>{day}:</h2>
+                    <h2>{day}</h2>
                     <div className="session-cards-group">
                         {timeSlots.map(time => {
                             const dayTimeSessions = sessions.filter(session =>

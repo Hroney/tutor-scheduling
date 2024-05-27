@@ -1,0 +1,50 @@
+.course-list,
+.day-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+}
+
+.course-list label,
+.day-list label {
+    display: flex;
+    align-items: center;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.checkbox-label {
+    margin-left: 5px;
+}
+
+.course-list label input,
+.day-list label input {
+    margin-right: 5px;
+}
+
+.label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.error-message {
+    color: red;
+    margin-top: 5px;
+}
+
+.form-container {
+    background-color: #222222;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.section {
+    margin-bottom: 10px;
+}

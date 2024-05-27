@@ -1,0 +1,28 @@
+.apply {
+    margin-left: calc(10% - 5vh);
+    margin-right: calc(10% - 5vh);
+    width: 75%;
+
+    height: calc(95vh - 10px);
+    overflow-y: auto;
+}
+
+h1 {
+    text-align: center;
+}
+
+.apply::-webkit-scrollbar {
+    width: 10px;
+}
+
+.apply::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.apply::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+.apply::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

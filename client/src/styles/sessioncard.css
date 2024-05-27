@@ -11,6 +11,7 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin: 2.5px;
     text-align: center;
+    cursor: pointer;
 }
 
 .session-card h2 {

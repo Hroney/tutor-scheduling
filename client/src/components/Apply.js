@@ -1,11 +1,12 @@
 import React from 'react';
 import ApplyForm from './ApplyForm';
+import "../styles/apply.css"
 
 
 function Apply() {
     return (
-        <div>
-            <h1>This is the Application page.</h1>
+        <div className='apply'>
+            <h1>Apply to be a Tutor!</h1>
             <ApplyForm />
         </div>
     );
