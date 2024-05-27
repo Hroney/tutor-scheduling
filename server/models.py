@@ -59,6 +59,14 @@ class ScheduledDay(db.Model):
     tutor = db.relationship('Tutor', back_populates='days_scheduled', lazy=True)
 
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'day': self.day,
+            'tutor id': self.tutor_id,
+            'tutor': self.tutor.name
+        }
+
     #validation/constraints
     __table_args__ = (
         UniqueConstraint('day', 'tutor_id', name="unique_day_tutor"),
@@ -76,6 +84,15 @@ class Course(db.Model):
     # Relationships
     tutor_id = db.Column(db.Integer, db.ForeignKey('tutors.id'))
     tutor = db.relationship('Tutor', back_populates='courses', lazy=True)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'tutor id': self.tutor_id,
+            'tutor': self.tutor.name
+        }
+
 
     __table_args__ = (
         UniqueConstraint('name', 'tutor_id', name="unique_course_tutor"),

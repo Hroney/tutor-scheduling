@@ -17,10 +17,12 @@ class Index(Resource):
 
     def get(self):
         response_dict = {
-            "index": "Welcome to the Tutor Sign-up API",
+            "_index_": "Welcome to the Tutor Sign-up API",
             "sessions": "/sessions",
             "tutors": "/tutors",
             "tutees": "/tutees",
+            "scheduled_days": "/scheduled_days",
+            "courses": "/courses",
         }
         response = make_response(
             response_dict,
@@ -94,21 +96,22 @@ class Tutors(Resource):
             for field in required_fields:
                 if field not in data:
                     return {'error': f'Missing required field {field}'}, 400
-                
+
+            existing_tutor = Tutor.query.filter_by(name=data.get('name')).first()
+            if existing_tutor:
+                return {'error': 'Tutor with the same name already exists'}, 400
+                    
             new_tutor = Tutor(
-                name = data.get('name'),
-                certification_level = data.get('certification_level')
+                name=data.get('name'),
+                certification_level=data.get('certification_level')
             )
 
             db.session.add(new_tutor)
             db.session.commit()
             return new_tutor.to_dict(), 201
-        except IntegrityError as e:
-            db.session.rollback()
-            return {'error': 'Tutor with the same name already exists'}, 400
         except Exception as e:
             db.session.rollback()
-            return {'error': 'An error occured while processing the request'}, 500
+            return {'error': 'An error occurred while processing the request'}, 500
     
 
 class Tutees(Resource):
@@ -276,9 +279,74 @@ class Tutees_id_number_check(Resource):
             200,
         )
         return response
+    
+
+class Scheduled_days(Resource):
+    def get(self):
+        response_dict_list = [s.to_dict() for s in ScheduledDay.query.all()]
+        response = make_response(
+            response_dict_list,
+            200,
+        )
+        return response
+    
+    def post(self):
+        try:
+            data = request.json
+            required_fields = ['day', 'tutor_id']
+
+            for field in required_fields:
+                if field not in data:
+                    return {'error': f'Missing required field {field}'}, 400
+                
+            new_day = ScheduledDay(
+                day = data.get('day'),
+                tutor_id = data.get('tutor_id')
+            )
+
+            db.session.add(new_day)
+            db.session.commit()
+            return new_day.to_dict(), 201
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'An {e} error occured while processing the request'}, 500
+
+
+class Courses(Resource):
+
+    def get(self):
+        response_dict_list = [s.to_dict() for s in Course.query.all()]
+        response = make_response(
+            response_dict_list,
+            200,
+        )
+        return response
+    
+    def post(self):
+        try:
+            data = request.json
+            required_fields = ['name', 'tutor_id']
+
+            for field in required_fields:
+                if field not in data:
+                    return {'error': f'Missing required field {field}'}, 400
+                
+            new_course = Course(
+                name = data.get('name'),
+                tutor_id = data.get('tutor_id')
+            )
+
+            db.session.add(new_course)
+            db.session.commit()
+            return new_course.to_dict(), 201
+        except Exception as e:
+            db.session.rollback()
+            return {'error': f'An {e} error occured while processing the request'}, 500
 
 api.add_resource(Index, '/')
 api.add_resource(Sessions, '/sessions')
+api.add_resource(Scheduled_days, '/scheduled_days')
+api.add_resource(Courses, '/courses')
 api.add_resource(Sessions_by_id, '/sessions/<int:id>')
 api.add_resource(Tutors, '/tutors')
 api.add_resource(Tutees, '/tutees')
