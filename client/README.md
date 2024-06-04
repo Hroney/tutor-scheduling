@@ -1,70 +1,166 @@
-# Getting Started with Create React App
+# Tutor Sign-up Application
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Overview
 
-## Available Scripts
+This project consists of a backend API built with Flask and a frontend application using React. The application facilitates the sign-up and management of tutoring sessions. Tutors can apply to join, and students (tutees) can sign up for sessions based on tutor availability.
 
-In the project directory, you can run:
+## Backend API
 
-### `npm start`
+### Technologies Used
+- Flask
+- Flask-RESTful
+- SQLAlchemy
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### Installation
+1. Clone the repository:
+    ```bash
+    git clone <repository_url>
+    cd <repository_directory>
+    ```
+2. Create and activate a virtual environment:
+    ```bash
+    python3 -m venv venv
+    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+    ```
+3. Install the dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
+4. Set up the database:
+    ```bash
+    flask db upgrade
+    ```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### Running the Application
+```bash
+python app.py
+```
+The API will be accessible at `http://localhost:5555`.
 
-### `npm test`
+### API Endpoints
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+#### Index
+- **GET** `/`
+  - Returns a welcome message and available endpoints.
 
-### `npm run build`
+#### Sessions
+- **GET** `/sessions`
+  - Returns a list of all sessions.
+- **POST** `/sessions`
+  - Creates a new session.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+#### Tutors
+- **GET** `/tutors`
+  - Returns a list of all tutors.
+- **POST** `/tutors`
+  - Creates a new tutor.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+#### Tutees
+- **GET** `/tutees`
+  - Returns a list of all tutees.
+- **POST** `/tutees`
+  - Creates a new tutee.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+#### Scheduled Days
+- **GET** `/scheduled_days`
+  - Returns a list of all scheduled days.
+- **POST** `/scheduled_days`
+  - Creates a new scheduled day.
 
-### `npm run eject`
+#### Courses
+- **GET** `/courses`
+  - Returns a list of all courses.
+- **POST** `/courses`
+  - Creates a new course.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+#### Individual Resources
+- **Sessions by ID**
+  - **GET** `/sessions/<int:id>`
+  - **PATCH** `/sessions/<int:id>`
+  - **DELETE** `/sessions/<int:id>`
+  
+- **Tutors by ID**
+  - **GET** `/tutors/<int:id>`
+  - **PATCH** `/tutors/<int:id>`
+  - **DELETE** `/tutors/<int:id>`
+  
+- **Tutees by ID**
+  - **GET** `/tutees/<int:id>`
+  - **PATCH** `/tutees/<int:id>`
+  - **DELETE** `/tutees/<int:id>`
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- **Sessions by Tutor ID**
+  - **GET** `/tutors/<int:id>/sessions`
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+- **Sessions by Tutee ID**
+  - **GET** `/tutees/<int:id>/sessions`
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+- **Tutee by Student Number**
+  - **GET** `/tutees/<int:student_number>/student_number`
 
-## Learn More
+## Frontend Application
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Technologies Used
+- React
+- React Router
+- Formik
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Installation
+1. Navigate to the frontend directory:
+    ```bash
+    cd frontend
+    ```
+2. Install the dependencies:
+    ```bash
+    npm install
+    ```
 
-### Code Splitting
+### Running the Application
+```bash
+npm start
+```
+The application will be accessible at `http://localhost:3000`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### Components
 
-### Analyzing the Bundle Size
+#### `App.js`
+- Main application component that sets up the layout including `NavBar`, `Outlet`, and `Sidebar`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+#### `Schedule.js`
+- Displays the weekly schedule of sessions and allows for sign-up for available slots.
 
-### Making a Progressive Web App
+#### `SessionCard.js`
+- Represents an individual session card. It shows session details and allows users to sign up for a session if it's available.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+#### `SignUpForm.js`
+- Form component for signing up for a tutoring session.
 
-### Advanced Configuration
+#### `Apply.js`
+- Displays the application form for tutors to apply to join the platform.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+#### `ApplyForm.js`
+- Form component for tutor application including validation and submission handling.
 
-### Deployment
+## Usage
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+### Sign Up for a Session
+1. Navigate to the schedule page.
+2. Click on an available time slot to sign up.
+3. Fill out the form with your details and submit.
 
-### `npm run build` fails to minify
+### Apply to be a Tutor
+1. Navigate to the application page.
+2. Fill out the tutor application form including name, certification level, available days, and courses.
+3. Submit the form and wait for confirmation.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Contributing
+
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature-branch`).
+3. Make your changes and commit them (`git commit -m 'Add new feature'`).
+4. Push to the branch (`git push origin feature-branch`).
+5. Open a pull request.
+
+## License
+
+This project is licensed under the MIT License. See the LICENSE file for details.

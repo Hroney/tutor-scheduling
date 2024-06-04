@@ -1,8 +1,8 @@
 function Sidebar() {
     return (
         <>
-            <h2>Categories</h2>
-            This is text
+            <h2>Placeholder</h2>
+            Lorem ipsum etc. etc.
         </>
     );
 }

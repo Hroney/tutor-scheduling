@@ -31,14 +31,10 @@ class Index(Resource):
         return response
 
 class Sessions(Resource):
-
     def get(self):
-        response_dict_list = [s.to_dict() for s in Session.query.all()]
-        response = make_response(
-            response_dict_list,
-            200,
-        )
-        return response
+        sessions = Session.query.all()
+        session_dicts = [session.to_dict() for session in sessions]
+        return session_dicts, 200
     
     def post(self):
         try:
@@ -49,18 +45,12 @@ class Sessions(Resource):
                 if field not in data:
                     return {'error': f'Missing required field {field}'}, 400
 
-            day = data.get('day_scheduled')
-            time = data.get('time_scheduled')
-            course = data.get('course')
-            tutor = data.get('tutor_id')
-            tutee = data.get('tutee_id')
-
             new_session = Session(
-                day_scheduled = day,
-                time_scheduled = time,
-                course = course,
-                tutor_id = tutor,
-                tutee_id = tutee
+                day_scheduled=data['day_scheduled'],
+                time_scheduled=data['time_scheduled'],
+                course=data['course'],
+                tutor_id=data['tutor_id'],
+                tutee_id=data['tutee_id']
             )
 
             db.session.add(new_session)
@@ -69,24 +59,17 @@ class Sessions(Resource):
             return new_session.to_dict(), 201
         except Exception as e:
             db.session.rollback()
-            return {'error': f'An error {e} occurred while processing the request'}, 500
+            return {'error': f'An error occurred while processing the request: {e}'}, 500
+
     
 
 
 
 class Tutors(Resource):
-
     def get(self):
-        response_dict_list = [t.to_dict() for t in Tutor.query.all()]
-        for t in response_dict_list:
-            t_id = t['id']
-            t.update({"tutor": f"/tutors/{t_id}"})
-        response = make_response(
-            response_dict_list,
-            200,
-        )
-        
-        return response
+        tutors = Tutor.query.all()
+        tutor_dicts = [tutor.to_dict() for tutor in tutors]
+        return tutor_dicts, 200
     
     def post(self):
         try:
@@ -97,57 +80,51 @@ class Tutors(Resource):
                 if field not in data:
                     return {'error': f'Missing required field {field}'}, 400
 
-            existing_tutor = Tutor.query.filter_by(name=data.get('name')).first()
+            existing_tutor = Tutor.query.filter_by(name=data['name']).first()
             if existing_tutor:
                 return {'error': 'Tutor with the same name already exists'}, 400
-                    
+
             new_tutor = Tutor(
-                name=data.get('name'),
-                certification_level=data.get('certification_level')
+                name=data['name'],
+                certification_level=data['certification_level']
             )
 
             db.session.add(new_tutor)
             db.session.commit()
+
             return new_tutor.to_dict(), 201
         except Exception as e:
             db.session.rollback()
-            return {'error': 'An error occurred while processing the request'}, 500
+            return {'error': f'An error occurred while processing the request: {e}'}, 500
+
     
 
 class Tutees(Resource):
-
     def get(self):
-        response_dict_list = [t.to_dict() for t in Tutee.query.all()]
-        for t in response_dict_list:
-            t_id = t['id']
-            t.update({"tutee": f"/tutees/{t_id}"})
-        response = make_response(
-            response_dict_list,
-            200,
-        )
-        return response
+        tutees = Tutee.query.all()
+        tutee_dicts = [tutee.to_dict() for tutee in tutees]
+        return tutee_dicts, 200
     
     def post(self):
         try:
             data = request.json
             required_fields = ['name', 'student_number']
-
             for field in required_fields:
                 if field not in data:
                     return {'error': f'Missing required field {field}'}, 400
                 
             new_tutee = Tutee(
-                name = data.get('name'),
-                student_number = data.get('student_number')
+                name=data.get('name'),
+                student_number=data.get('student_number')
             )
 
             db.session.add(new_tutee)
             db.session.commit()
+
             return new_tutee.to_dict(), 201
         except Exception as e:
             db.session.rollback()
-            return {'error': f'An {e} error occured while processing the request'}, 500
-
+            return {'error': f'An error occurred while processing the request: {e}'}, 500
 
 # relational views
 
@@ -273,7 +250,6 @@ class Tutees_sessions(Resource):
 class Tutees_id_number_check(Resource):
     def get(self, student_number):
         record = Tutee.query.filter_by(student_number = student_number).first()
-        print(record)
         response = make_response(
             record.to_dict(),
             200,

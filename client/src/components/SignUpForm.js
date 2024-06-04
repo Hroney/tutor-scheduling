@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Formik, Form, Field } from 'formik';
+import * as Yup from 'yup';
 import { fetchTutors, fetchSessions } from './helpers/apiHelpers';
 import { filterAvailableTutors, handleTutorChange } from './helpers/formHelpers';
 import TutorSelect from './helpers/TutorSelect';
@@ -23,17 +24,15 @@ const SignUpForm = ({ session, handleClose, onSessionChange }) => {
     }, [tutors, sessions, session.day_scheduled, session.time_scheduled, session]);
 
     const handleSubmit = (values, { setSubmitting }) => {
-        console.log("Values:", values);
-        console.log("Session:", session);
-
         let tutee = {
             name: values.name,
             student_number: values.student_id,
-        }
+        };
 
         fetch(`tutees/${values.student_id}/student_number`)
             .then((res) => {
                 if (!res.ok) {
+                    console.log(JSON.stringify(tutee))
                     return fetch('tutees', {
                         method: 'POST',
                         headers: {
@@ -46,7 +45,7 @@ const SignUpForm = ({ session, handleClose, onSessionChange }) => {
                                 throw new Error('failed to post tutee');
                             }
                             return postResponse.json();
-                        })
+                        });
                 }
                 return res.json();
             })
@@ -57,7 +56,7 @@ const SignUpForm = ({ session, handleClose, onSessionChange }) => {
                     day_scheduled: session.day_scheduled,
                     tutor_id: parseInt(values.tutor),
                     tutee_id: parseInt(data.id)
-                }
+                };
                 fetch("sessions", {
                     method: "POST",
                     headers: {
@@ -72,7 +71,7 @@ const SignUpForm = ({ session, handleClose, onSessionChange }) => {
                         setReload(!reload);
                         onSessionChange();
                     }
-                })
+                });
             })
             .catch((error) => console.error('There was a problem with the fetch operation:', error));
 
@@ -83,28 +82,46 @@ const SignUpForm = ({ session, handleClose, onSessionChange }) => {
         }, 1000);
     };
 
+    const validationSchema = Yup.object().shape({
+        name: Yup.string()
+            .min(2, 'Name must be at least 2 characters long')
+            .required('Name is required'),
+        student_id: Yup.string()
+            .matches(/^4000\d{6}$/, 'Student number must be 10 digits and start with 4000')
+            .required('Student number is required')
+    });
+
     return (
         <div className="signup-form-container">
             <h2>Sign Up for Session</h2>
             <Formik
                 initialValues={{ name: '', student_id: '', tutor: '', course: '' }}
+                validationSchema={validationSchema}
                 onSubmit={handleSubmit}
             >
-                {({ isSubmitting, setFieldValue, values }) => (
+                {({ isSubmitting, setFieldValue, values, errors, touched }) => (
                     <Form>
-                        <Field type="text" name="name" placeholder="Your Name" />
-                        <Field type="text" name="student_id" placeholder="Your ID number" />
+                        <div>
+                            <Field type="text" name="name" placeholder="Your Name" />
+                            {errors.name && touched.name ? (
+                                <div className="error-message">{errors.name}</div>
+                            ) : null}
+                        </div>
+                        <div>
+                            <Field type="text" name="student_id" placeholder="Your ID number" />
+                            {errors.student_id && touched.student_id ? (
+                                <div className="error-message">{errors.student_id}</div>
+                            ) : null}
+                        </div>
                         <TutorSelect
                             tutors={filteredTutors}
                             value={values.tutor}
                             onChange={e => handleTutorChange(e, setFieldValue, filteredTutors, setSelectedTutorCourses)}
                         />
-
                         <CourseSelect
                             courses={selectedTutorCourses}
                             value={values.course}
                         />
-
                         {!showSuccess && (
                             <button type="submit" disabled={isSubmitting}>
                                 {isSubmitting ? 'Submitting...' : 'Submit'}
