@@ -136,7 +136,7 @@ class Tutee(db.Model, SerializerMixin):
     __tablename__ = 'tutees'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, unique=True)
+    name = db.Column(db.String)
     student_number = db.Column(db.Integer)
 
     # Relationships

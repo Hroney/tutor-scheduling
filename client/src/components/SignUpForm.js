@@ -29,11 +29,10 @@ const SignUpForm = ({ session, handleClose, onSessionChange }) => {
             student_number: values.student_id,
         };
 
-        fetch(`tutees/${values.student_id}/student_number`)
+        fetch(`/tutees/${values.student_id}/student_number`)
             .then((res) => {
                 if (!res.ok) {
-                    console.log(JSON.stringify(tutee))
-                    return fetch('tutees', {
+                    return fetch('/tutees', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -42,7 +41,7 @@ const SignUpForm = ({ session, handleClose, onSessionChange }) => {
                     })
                         .then(postResponse => {
                             if (!postResponse.ok) {
-                                throw new Error('failed to post tutee');
+                                throw new Error('Failed to post tutee');
                             }
                             return postResponse.json();
                         });
@@ -57,7 +56,7 @@ const SignUpForm = ({ session, handleClose, onSessionChange }) => {
                     tutor_id: parseInt(values.tutor),
                     tutee_id: parseInt(data.id)
                 };
-                fetch("sessions", {
+                return fetch("/sessions", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -81,6 +80,7 @@ const SignUpForm = ({ session, handleClose, onSessionChange }) => {
             setTimeout(handleClose, 1500);
         }, 1000);
     };
+
 
     const validationSchema = Yup.object().shape({
         name: Yup.string()

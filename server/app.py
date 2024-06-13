@@ -106,25 +106,27 @@ class Tutees(Resource):
         return tutee_dicts, 200
     
     def post(self):
+        data = request.json
+        required_fields = ['name', 'student_number']
+        for field in required_fields:
+            if field not in data:
+                return {'error': f'Missing required field {field}'}, 400
+        new_tutee = Tutee(
+            name=data.get('name'),
+            student_number=data.get('student_number')
+        )
+        print(new_tutee.to_dict())
+        db.session.add(new_tutee)
         try:
-            data = request.json
-            required_fields = ['name', 'student_number']
-            for field in required_fields:
-                if field not in data:
-                    return {'error': f'Missing required field {field}'}, 400
-                
-            new_tutee = Tutee(
-                name=data.get('name'),
-                student_number=data.get('student_number')
-            )
-
-            db.session.add(new_tutee)
             db.session.commit()
-
-            return new_tutee.to_dict(), 201
         except Exception as e:
             db.session.rollback()
-            return {'error': f'An error occurred while processing the request: {e}'}, 500
+            existing_tutee = Tutee.query.filter_by(student_number=data['student_number']).first()
+            if existing_tutee:
+                return existing_tutee.to_dict(), 200
+            else:
+                return {'error': f'An error occurred while processing the request: {e}'}, 500
+        return new_tutee.to_dict(), 201
 
 # relational views
 
@@ -249,7 +251,9 @@ class Tutees_sessions(Resource):
 
 class Tutees_id_number_check(Resource):
     def get(self, student_number):
-        record = Tutee.query.filter_by(student_number = student_number).first()
+        record = Tutee.query.filter_by(student_number=student_number).first()
+        if record is None:
+            return {'error': 'Tutee not found'}, 404
         response = make_response(
             record.to_dict(),
             200,
